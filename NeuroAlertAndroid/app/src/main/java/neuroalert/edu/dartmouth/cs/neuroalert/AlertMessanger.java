@@ -34,21 +34,21 @@ public class AlertMessanger {
                 PebbleKit.sendAckToPebble(context, transactionId);
 
                 //Check the key exists
-                if(data.getUnsignedIntegerAsLong(KEY_BUTTON_EVENT) != null) {
-                    int button = data.getUnsignedIntegerAsLong(KEY_BUTTON_EVENT).intValue();
-
-                    switch(button) {
-                        case BUTTON_EVENT_UP:
-                            //The UP button was pressed
-                            break;
-                        case BUTTON_EVENT_DOWN:
-                            //The DOWN button was pressed
-                            break;
-                        case BUTTON_EVENT_SELECT:
-                            //The SELECT button was pressed
-                            break;
-                    }
-                }
+//                if(data.getUnsignedIntegerAsLong(KEY_BUTTON_EVENT) != null) {
+//                    int button = data.getUnsignedIntegerAsLong(KEY_BUTTON_EVENT).intValue();
+//
+//                    switch(button) {
+//                        case BUTTON_EVENT_UP:
+//                            //The UP button was pressed
+//                            break;
+//                        case BUTTON_EVENT_DOWN:
+//                            //The DOWN button was pressed
+//                            break;
+//                        case BUTTON_EVENT_SELECT:
+//                            //The SELECT button was pressed
+//                            break;
+//                    }
+//                }
             }
 
         };
