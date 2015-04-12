@@ -1,4 +1,4 @@
-package neuroalert.edu.dartmouth.cs.neuroalert;
+package edu.dartmouth.cs.neurostare;
 
 import android.content.Context;
 
