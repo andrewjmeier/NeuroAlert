@@ -66,7 +66,7 @@ public class AlertMessanger {
         //Make the watch vibrate
         PebbleDictionary dict = new PebbleDictionary();
 //                dict.addInt32(4, 69);
-        dict.addString(1, "HEY MICKEY! How are you doing during this hackathon? I'm getting sleepy h");
+        dict.addString(1, "HEY WAKE UP!!");
         PebbleKit.sendDataToPebble(context, PEBBLE_APP_UUID, dict);
 
         return true;

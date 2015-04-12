@@ -173,7 +173,7 @@ public class MainActivity extends Activity implements OnClickListener {
                         } else {
                             blinks.setText("0");
                         }
-                        if(durationSinceBlink > 5 && (durationSinceBlink - 1) % 5 == 0){
+                        if(durationSinceBlink > 10 && (durationSinceBlink - 1) % 5 == 0){
                             alrtMsg.sendAlert(1);
                         }
                     }
@@ -226,7 +226,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mButtonView = new TextView(this);

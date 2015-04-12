@@ -31,16 +31,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class MainActivity extends Activity implements View.OnClickListener{
 
     private static final String FIREBASE_URL = "https://neuroalert.firebaseio.com";
-    private Firebase mFirebaseRef = null;
+    protected Firebase mFirebaseRef = null;
+    protected String game = null, player = null;
 
     boolean connected = false;
+    PebbleMessanger pmsg = null;
+    boolean isGameStarted = false;
 
     class ConnectionListener extends MuseConnectionListener {
 
@@ -115,14 +116,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         DataListener(final WeakReference<Activity> activityRef) {
             this.activityRef = activityRef;
-            final Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-                    updateTimeSinceBlink();
-                }
-            }, 0, 1000);//Update text every second
 
         }
 
@@ -144,6 +137,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 if (p.getBlink()) {
                     Log.i("Artifacts", "blink");
                     durationSinceBlink = secondsSinceLastBlink(System.currentTimeMillis(), true);
+                    if(isGameStarted){
+
+                        Map<String, Object> updates = new HashMap<>();
+                        if(player != null && game != null) {
+                            updates.put("loser", player);
+                            mFirebaseRef.getRoot().child("games")
+                                    .child(game).updateChildren(updates);
+                        }
+
+                    }
+
                 } else if (p.getJawClench()) {
                     Log.i("Artifacts", "jaw clench");
                 }
@@ -170,7 +174,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             return total / nums.size();
         }
 
-        private void updateTimeSinceBlink(){
+        protected void updateTimeSinceBlink(){
             Activity activity = activityRef.get();
             if (activity != null) {
                 activity.runOnUiThread(new Runnable() {
@@ -182,9 +186,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             blinks.setText("" + durationSinceBlink);
                         } else {
                             blinks.setText("0");
-                        }
-                        if(durationSinceBlink > 5 && (durationSinceBlink - 1) % 5 == 0){
-                            alrtMsg.sendAlert(1);
                         }
                     }
                 });
@@ -222,7 +223,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private Muse muse = null;
     private ConnectionListener connectionListener = null;
-    private DataListener dataListener = null;
+    protected DataListener dataListener = null;
     private boolean dataTransmission = true;
 
     public MainActivity() {
@@ -253,20 +254,24 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
 
 
-        final PebbleMessanger pmsg = new PebbleMessanger(getApplicationContext());
+        pmsg = new PebbleMessanger(this);
+        alrtMsg = new AlertMessanger(this);
+
 
         Button join =  (Button) findViewById(R.id.joinGame);
         final EditText playerName = (EditText) findViewById(R.id.personName);
         final EditText gameName = (EditText) findViewById(R.id.gameName);
         final CheckBox isHost = (CheckBox) findViewById(R.id.isHost);
+        mFirebaseRef = new Firebase(FIREBASE_URL);
+
 
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                pmsg.sendEndGame(true);
 
-                String player = playerName.getText().toString();
-                String game = gameName.getText().toString();
+                player = playerName.getText().toString();
+                game = gameName.getText().toString();
 
                 Map<String, Object> updates = new HashMap<>();
                 if(player != null && game != null) {
@@ -278,11 +283,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     mFirebaseRef.getRoot().child("games")
                             .child(game).updateChildren(updates);
                 }
+                pmsg.setGameData(game, player);
             }
         });
 
 
-        mFirebaseRef = new Firebase(FIREBASE_URL);
 
     }
 
@@ -394,6 +399,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
     protected void onDestroy() {
         alrtMsg.unregister();
+        pmsg.mFirebaseRef.getRoot().child("games").removeEventListener(pmsg.gameUpdates);
         super.onDestroy();
 
     }
