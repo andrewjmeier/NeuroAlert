@@ -38,4 +38,10 @@ public class MainActivity extends Activity {
         //setContentView(mButtonView);
     }
 
+    @Override
+    protected void onDestroy() {
+        alrtMsg.unregister();
+        super.onDestroy();
+
+    }
 }
